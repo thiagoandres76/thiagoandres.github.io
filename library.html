@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Midnight Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #12100e;
+  --bg2: #1a1714;
+  --bg3: #221f1b;
+  --surface: #2a2520;
+  --border: rgba(210,180,130,0.12);
+  --amber: #d4a84b;
+  --amber-dim: rgba(212,168,75,0.15);
+  --amber-glow: rgba(212,168,75,0.06);
+  --cream: #f0e8d8;
+  --muted: #9a8e7e;
+  --spine1: #3d2b1f;
+  --spine2: #1f3040;
+  --spine3: #2a3320;
+  --spine4: #3a2030;
+  --spine5: #1e2e38;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: 'Lora', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(212,168,75,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(18,16,14,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--amber);
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.logo-icon { font-size: 1.1rem; }
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 380px;
+  margin: 0 2rem;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  color: var(--cream);
+  font-family: 'Lora', serif;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.3s, background 0.3s;
+}
+.search-wrap input::placeholder { color: var(--muted); }
+.search-wrap input:focus {
+  border-color: var(--amber);
+  background: var(--surface);
+}
+.search-icon {
+  position: absolute;
+  left: 0.75rem; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.nav-links {
+  display: flex; gap: 0.25rem;
+}
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Lora', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: color 0.2s, background 0.2s;
+}
+.nav-btn:hover, .nav-btn.active {
+  color: var(--cream);
+  background: var(--amber-dim);
+}
+
+/* ── HERO SHELF ── */
+.hero-shelf {
+  position: relative;
+  padding: 3rem 2rem 2rem;
+  overflow: hidden;
+}
+
+.hero-shelf::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(to top, var(--bg), transparent);
+  pointer-events: none;
+}
+
+.hero-text {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+.hero-text h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.2;
+}
+.hero-text h1 span { color: var(--amber); }
+.hero-text p {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Decorative bookshelf */
+.bookshelf {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 1rem 1rem;
+  position: relative;
+}
+.bookshelf::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 8px;
+  background: linear-gradient(to bottom, #3a3025, #2a221a);
+  border-radius: 2px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+
+.shelf-book {
+  width: 28px;
+  border-radius: 2px 2px 0 0;
+  cursor: pointer;
+  transition: transform 0.25s ease, filter 0.25s;
+  position: relative;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.5);
+}
+.shelf-book:hover {
+  transform: translateY(-12px);
+  filter: brightness(1.3);
+}
+.shelf-book .book-title-spine {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-size: 7px;
+  color: rgba(255,255,255,0.5);
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translateX(-50%) translateY(-50%) rotate(180deg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 80%;
+  letter-spacing: 0.05em;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 60px);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  background: var(--bg2);
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.sidebar-section { margin-bottom: 2rem; }
+
+.sidebar-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.genre-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Lora', serif;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+}
+.genre-btn:hover, .genre-btn.active {
+  color: var(--cream);
+  background: var(--amber-dim);
+}
+.genre-btn.active {
+  border-left: 2px solid var(--amber);
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+/* ── CONTENT AREA ── */
+.content {
+  padding: 2rem;
+  background: var(--bg);
+}
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--cream);
+}
+.section-title span {
+  font-style: italic;
+  color: var(--amber);
+}
+.view-all {
+  font-size: 0.75rem;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  transition: color 0.2s;
+  border-bottom: 1px solid transparent;
+}
+.view-all:hover { color: var(--amber); border-bottom-color: var(--amber); }
+
+/* ── BOOK GRID ── */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.book-card {
+  cursor: pointer;
+  transition: transform 0.25s ease;
+  position: relative;
+}
+.book-card:hover { transform: translateY(-6px); }
+.book-card:hover .book-cover { box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 20px rgba(212,168,75,0.1); }
+
+.book-cover {
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: 3px 6px 6px 3px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 4px 6px 20px rgba(0,0,0,0.6);
+  transition: box-shadow 0.3s;
+}
+
+/* Book spine effect */
+.book-cover::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 12px;
+  background: rgba(0,0,0,0.3);
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.book-cover-inner {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.75rem 0.6rem 0.75rem 1rem;
+  position: relative;
+}
+
+.book-cover-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  line-height: 1.3;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+.book-cover-author {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.65);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.badge {
+  position: absolute;
+  top: 0.5rem; right: 0.5rem;
+  background: var(--amber);
+  color: var(--bg);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 2px;
+  font-weight: 700;
+}
+
+.book-meta {
+  margin-top: 0.6rem;
+}
+.book-name {
+  font-size: 0.82rem;
+  color: var(--cream);
+  line-height: 1.35;
+  font-family: 'Playfair Display', serif;
+}
+.book-author {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+  font-style: italic;
+}
+.book-stars {
+  font-size: 0.65rem;
+  color: var(--amber);
+  margin-top: 0.25rem;
+  letter-spacing: 1px;
+}
+
+/* ── READER MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(8,6,4,0.92);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  padding: 1rem;
+}
+.modal-overlay.open { display: flex; }
+
+.reader-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(212,168,75,0.04);
+  animation: modalIn 0.35s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.reader-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.reader-title-area { display: flex; flex-direction: column; gap: 2px; }
+.reader-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--cream);
+}
+.reader-author { font-size: 0.75rem; color: var(--muted); }
+
+.reader-controls {
+  display: flex; gap: 0.5rem; align-items: center;
+}
+
+.ctrl-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 32px; height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.ctrl-btn:hover { color: var(--cream); border-color: var(--amber); background: var(--amber-dim); }
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px;
+  transition: color 0.2s;
+  margin-left: 0.5rem;
+}
+.close-btn:hover { color: var(--cream); }
+
+.reader-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2.5rem 3rem;
+  line-height: 1.95;
+  font-size: var(--reader-size, 1rem);
+  color: var(--cream);
+  scroll-behavior: smooth;
+}
+.reader-body::-webkit-scrollbar { width: 4px; }
+.reader-body::-webkit-scrollbar-track { background: transparent; }
+.reader-body::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 2px; }
+
+.reader-body p { margin-bottom: 1.4em; }
+.reader-body p:first-child::first-letter {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5em;
+  float: left;
+  line-height: 0.8;
+  margin: 0.05em 0.1em 0 0;
+  color: var(--amber);
+}
+.reader-body h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--amber);
+  margin: 2em 0 1em;
+  text-align: center;
+}
+.reader-body h2::before, .reader-body h2::after {
+  content: '—';
+  margin: 0 0.5em;
+  opacity: 0.5;
+}
+
+.reader-footer {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.progress-wrap {
+  flex: 1;
+  height: 3px;
+  background: var(--surface);
+  border-radius: 2px;
+  margin: 0 1rem;
+  cursor: pointer;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--amber), #e8c068);
+  border-radius: 2px;
+  transition: width 0.3s;
+  pointer-events: none;
+}
+.page-info { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+/* ── FEATURED ROW ── */
+.featured-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.featured-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  display: flex;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.featured-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top left, var(--amber-glow), transparent 70%);
+  pointer-events: none;
+}
+.featured-card:hover { border-color: rgba(212,168,75,0.3); background: var(--surface); }
+
+.featured-cover {
+  width: 90px;
+  flex-shrink: 0;
+  aspect-ratio: 2/3;
+  border-radius: 2px 5px 5px 2px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 4px 6px 20px rgba(0,0,0,0.6);
+}
+.featured-cover::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 10px;
+  background: rgba(0,0,0,0.3);
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+.featured-cover-inner {
+  width: 100%; height: 100%;
+  display: flex; align-items: flex-end;
+  padding: 0.5rem 0.4rem 0.5rem 0.7rem;
+}
+
+.featured-info { display: flex; flex-direction: column; justify-content: space-between; }
+.featured-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 0.5rem;
+}
+.featured-book-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.3;
+  margin-bottom: 0.4rem;
+}
+.featured-book-author { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem; }
+.featured-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; flex: 1; }
+.featured-read-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  background: var(--amber);
+  color: var(--bg);
+  border: none;
+  padding: 0.5rem 1.2rem;
+  font-family: 'Lora', serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+.featured-read-btn:hover { background: #e8c068; }
+
+.quote-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.quote-card::before {
+  content: '\201C';
+  font-family: 'Playfair Display', serif;
+  font-size: 8rem;
+  color: var(--amber);
+  opacity: 0.08;
+  position: absolute;
+  top: -1rem; left: 1rem;
+  line-height: 1;
+  pointer-events: none;
+}
+.quote-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--cream);
+  margin-bottom: 1rem;
+}
+.quote-source { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.1em; }
+
+/* ── CANDLE FLICKER ── */
+.candle {
+  position: fixed;
+  bottom: 2rem; right: 2rem;
+  font-size: 1.8rem;
+  animation: flicker 3s ease-in-out infinite;
+  z-index: 50;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(212,168,75,0.4));
+}
+@keyframes flicker {
+  0%,100% { opacity:1; transform: scale(1) rotate(-1deg); }
+  25% { opacity:0.85; transform: scale(0.98) rotate(1deg); }
+  50% { opacity:1; transform: scale(1.02) rotate(-0.5deg); }
+  75% { opacity:0.9; transform: scale(0.99) rotate(0.5deg); }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 3px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .main { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1rem; }
+  .sidebar-section { margin: 0; }
+  .sidebar-label { display: none; }
+  .genre-btn { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
+  .featured-row { grid-template-columns: 1fr; }
+  .reader-body { padding: 1.5rem; }
+  .search-wrap { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">
+    <span class="logo-icon">🕯</span>
+    The Midnight Library
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search books, authors, genres…">
+  </div>
+  <nav class="nav-links">
+    <button class="nav-btn active" onclick="filterGenre('all')">All</button>
+    <button class="nav-btn" onclick="filterGenre('new')">New</button>
+    <button class="nav-btn" onclick="filterGenre('popular')">Popular</button>
+  </nav>
+</header>
+
+<div class="candle">🕯️</div>
+
+<!-- HERO SHELF (decorative) -->
+<div class="hero-shelf">
+  <div class="hero-text">
+    <h1>Read by <span>candlelight.</span></h1>
+    <p>A quiet place for stories, ideas, and the hours between midnight and dawn.</p>
+  </div>
+  <div class="bookshelf" id="decorShelf"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Genres</div>
+      <button class="genre-btn active" onclick="setGenre(this,'all')">📚 All Books</button>
+      <button class="genre-btn" onclick="setGenre(this,'classic')">🏛 Classics</button>
+      <button class="genre-btn" onclick="setGenre(this,'mystery')">🔎 Mystery</button>
+      <button class="genre-btn" onclick="setGenre(this,'fantasy')">✨ Fantasy</button>
+      <button class="genre-btn" onclick="setGenre(this,'philosophy')">💭 Philosophy</button>
+      <button class="genre-btn" onclick="setGenre(this,'adventure')">⚓ Adventure</button>
+      <button class="genre-btn" onclick="setGenre(this,'poetry')">🌙 Poetry</button>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Mood</div>
+      <button class="genre-btn" onclick="setGenre(this,'dark')">🌑 Dark & Brooding</button>
+      <button class="genre-btn" onclick="setGenre(this,'cozy')">☕ Cozy & Warm</button>
+      <button class="genre-btn" onclick="setGenre(this,'epic')">⚡ Epic & Grand</button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- Featured -->
+    <div class="featured-row">
+      <div class="featured-card" onclick="openBook(0)">
+        <div class="featured-cover">
+          <div class="featured-cover-inner" style="background: linear-gradient(160deg, #1a0a0a, #4a1020);">
+            <div style="font-size:0.6rem;color:rgba(255,255,255,0.7);font-family:'Playfair Display',serif;font-style:italic;">The Name<br>of the Rose</div>
+          </div>
+        </div>
+        <div class="featured-info">
+          <div>
+            <div class="featured-tag">✦ Featured This Week</div>
+            <div class="featured-book-title">The Name of the Rose</div>
+            <div class="featured-book-author">Umberto Eco</div>
+            <div class="featured-desc">A medieval monk investigates a series of mysterious deaths in an Italian abbey. A labyrinth of secrets, manuscripts, and forbidden knowledge.</div>
+          </div>
+          <button class="featured-read-btn">▶ Read Now</button>
+        </div>
+      </div>
+      <div class="quote-card">
+        <p class="quote-text">"A book is a dream that you hold in your hands."</p>
+        <span class="quote-source">— Neil Gaiman</span>
+      </div>
+    </div>
+
+    <!-- Book Grid -->
+    <div class="section-header">
+      <h2 class="section-title">The <span>Collection</span></h2>
+      <a class="view-all" href="#">View all →</a>
+    </div>
+    <div class="book-grid" id="bookGrid"></div>
+
+  </main>
+</div>
+
+<!-- READER MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="reader-modal">
+    <div class="reader-header">
+      <div class="reader-title-area">
+        <div class="reader-title" id="modalTitle">Book Title</div>
+        <div class="reader-author" id="modalAuthor">Author</div>
+      </div>
+      <div class="reader-controls">
+        <button class="ctrl-btn" title="Decrease font" onclick="changeFont(-1)">A−</button>
+        <button class="ctrl-btn" title="Increase font" onclick="changeFont(1)">A+</button>
+        <button class="ctrl-btn" title="Bookmark" onclick="toggleBookmark()" id="bmBtn">🔖</button>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+    <div class="reader-body" id="readerBody" onscroll="updateProgress()"></div>
+    <div class="reader-footer">
+      <span class="page-info" id="pageInfo">Page 1</span>
+      <div class="progress-wrap" onclick="seekProgress(event)">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <span class="page-info" id="pageEnd">—</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const BOOKS = [
+  {
+    id: 0,
+    title: "The Name of the Rose",
+    author: "Umberto Eco",
+    genre: "mystery",
+    mood: "dark",
+    stars: 5,
+    badge: "Featured",
+    color: ["#1a0a0a","#4a1020"],
+    content: `<h2>Chapter I</h2>
+<p>In the beginning was the Word, and the Word was with God, and the Word was God. This the Scripture tells us, and what I am about to narrate is also, in its way, a form of Scripture — not divine, but human; not eternal, but bound by the limits of a November in the year of our Lord 1327.</p>
+<p>I arrived at the abbey on a cold morning, the mountains wreathed in a fog so dense it seemed the world had been erased. Only the great stone walls emerged from that whiteness, solid and implacable, as though God had decided to keep only this place from the general dissolution.</p>
+<p>Brother William of Baskerville walked beside me, his long frame bent slightly forward, grey eyes already scanning the stones and archways with the peculiar hunger I had come to recognize as thought in motion.</p>
+<h2>Chapter II</h2>
+<p>The deaths began before we had unpacked our saddle bags. A young illuminator had fallen from the scriptorium window — or been pushed. The abbot received us with urgency disguised as calm, and I understood then that we had not been invited for the purposes of the theological debate convening in three days' time, but for something older and more dangerous: the truth.</p>
+<p>The library rose above the abbey like a tower unto itself. Seven floors of hexagonal rooms, each unlocking into others in a pattern no single monk had ever fully mapped. Books beyond counting. Knowledge locked in labyrinths. And somewhere within — a secret worth killing for.</p>
+<p>"What are we looking for?" I asked William.</p>
+<p>"We are looking," he said quietly, "for what someone does not wish to be found."</p>
+<h2>Chapter III</h2>
+<p>The library held its breath at night. I had seen it from outside — candlelight moving behind the high windows in patterns that made no sense, as though the books themselves were restless. The other monks crossed themselves when they spoke of it after dark. One refused to speak of it at all.</p>
+<p>William spent hours in the scriptorium, reading the margins of illuminated manuscripts with a magnifying glass fashioned from two lenses, an invention I found miraculous and which he treated as casually as a knife. He was reading the shadows left by other readers — the pressed fingerprints of anxiety, the small crossings-out of fear.</p>
+<p>"Every book," he told me, "is a conversation between its author and every hand that has turned its pages. And some conversations," he set down the manuscript carefully, "have been made dangerous by the nature of what they discuss."</p>`
+  },
+  {
+    id: 1,
+    title: "Meditations",
+    author: "Marcus Aurelius",
+    genre: "philosophy",
+    mood: "cozy",
+    stars: 5,
+    color: ["#0d1a10","#1a3020"],
+    content: `<h2>Book One</h2>
+<p>From my grandfather Verus I learned to be gentle and meek, and to refrain from all anger and passion. From the reputation and remembrance of my father, modesty and manly character. From my mother, piety and beneficence, and abstinence not only from evil deeds but even from evil thoughts.</p>
+<p>Waste no more time arguing about what a good man should be. Be one.</p>
+<h2>Book Two</h2>
+<p>Begin the morning by saying to yourself, I shall meet with the busy-body, the ungrateful, arrogant, deceitful, envious, unsocial. All these things happen to them by reason of their ignorance of what is good and evil.</p>
+<p>You have power over your mind, not outside events. Realize this, and you will find strength. The universe is change; our life is what our thoughts make it.</p>
+<p>Never esteem anything as of advantage to you that will make you break your word or lose your self-respect.</p>
+<h2>Book Four</h2>
+<p>Confine yourself to the present. The present moment always will have been. Do not indulge in dreams of what you had, or fears of what may come. The moment is all you have — and all you need.</p>
+<p>Loss is nothing else but change, and change is Nature's delight. Accept the things to which fate binds you, and love the people with whom fate brings you together, and do so with all your heart.</p>`
+  },
+  {
+    id: 2,
+    title: "1984",
+    author: "George Orwell",
+    genre: "classic",
+    mood: "dark",
+    stars: 5,
+    badge: "Classic",
+    color: ["#0a0a1a","#101040"],
+    content: `<h2>Part One, Chapter I</h2>
+<p>It was a bright cold day in April, and the clocks were striking thirteen. Winston Smith, his chin nuzzled into his breast in an effort to escape the vile wind, slipped quickly through the glass doors of Victory Mansions, though not quickly enough to prevent a swirl of gritty dust from entering along with him.</p>
+<p>The hallway smelt of boiled cabbage and old rag mats. At one end of it a coloured poster, too large for the hallway, had been tacked to the wall. It depicted simply an enormous face, more than a metre wide: the face of a man of about forty-five, with a heavy black moustache and ruggedly handsome features.</p>
+<p>Winston made for the stairs. It was no use trying the lift. Even at the best of times it was seldom working, and at present the electric current was cut off during daylight hours. It was part of the economy drive in preparation for Hate Week. The flat was seven flights up, and Winston, who was thirty-nine and had a varicose ulcer above his right ankle, went slowly, resting several times on the way.</p>
+<h2>The Diary</h2>
+<p>He dipped the pen into the ink and then faltered for just a second. A tremor had gone through his bowels. To mark the paper was the decisive act. In small clumsy letters he wrote: April 4th, 1984.</p>
+<p>He sat back. A sense of complete helplessness had descended upon him. To begin with, he did not know with any certainty that this was 1984. It must be round about that date, since he was fairly sure that his age was thirty-nine, and he believed that he had been born in 1944 or 1945; but it was never possible nowadays to pin down any date within a year or two.</p>`
+  },
+  {
+    id: 3,
+    title: "The Hobbit",
+    author: "J.R.R. Tolkien",
+    genre: "fantasy",
+    mood: "cozy",
+    stars: 5,
+    color: ["#1a1200","#3a2800"],
+    content: `<h2>An Unexpected Party</h2>
+<p>In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole, filled with the ends of worms and an oozy smell, nor yet a dry, bare, sandy hole with nothing in it to sit down on or to eat: it was a hobbit-hole, and that means comfort.</p>
+<p>It had a perfectly round door like a porthole, painted green, with a shiny yellow brass knob in the exact middle. The door opened on to a tube-shaped hall like a tunnel: a very comfortable tunnel without smoke, with panelled walls, and floors tiled and carpeted, provided with polished chairs, and lots and lots of pegs for hats and coats — the hobbit was fond of visitors.</p>
+<p>The tunnel wound on and on, going fairly but not quite straight into the side of the hill — The Hill, as all the people for many miles round called it — and many little round doors opened out of it, first on one side and then on another.</p>
+<h2>The Road Goes Ever On</h2>
+<p>Gandalf looked at him. "My dear Bilbo!" he said. "Something is the matter with you! You are not the hobbit that you were."</p>
+<p>And indeed Bilbo found he was not quite the same. He had been changed, quietly and without his knowing it, the way any real adventure changes a person — not in the great dramatic moments but in the small ones: in a dragon's riddle answered correctly, in a moment of mercy shown in the dark, in the long walk home.</p>`
+  },
+  {
+    id: 4,
+    title: "Moby-Dick",
+    author: "Herman Melville",
+    genre: "adventure",
+    mood: "epic",
+    stars: 4,
+    badge: "Epic",
+    color: ["#001020","#002040"],
+    content: `<h2>Chapter I — Loomings</h2>
+<p>Call me Ishmael. Some years ago — never mind how long precisely — having little money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation.</p>
+<p>Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people's hats off — then, I account it high time to get to sea as soon as I can.</p>
+<p>There is nothing surprising in this. If they only knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the ocean with me.</p>`
+  },
+  {
+    id: 5,
+    title: "The Raven & Other Poems",
+    author: "Edgar Allan Poe",
+    genre: "poetry",
+    mood: "dark",
+    stars: 5,
+    color: ["#0a0010","#1a0020"],
+    content: `<h2>The Raven</h2>
+<p>Once upon a midnight dreary, while I pondered, weak and weary,<br>
+Over many a quaint and curious volume of forgotten lore—<br>
+While I nodded, nearly napping, suddenly there came a tapping,<br>
+As of some one gently rapping, rapping at my chamber door.<br>
+"'Tis some visitor," I muttered, "tapping at my chamber door—<br>
+Only this and nothing more."</p>
+<p>Ah, distinctly I remember it was in the bleak December;<br>
+And each separate dying ember wrought its ghost upon the floor;<br>
+Eagerly I wished the morrow;—vainly I had sought to borrow<br>
+From my books surcease of sorrow—sorrow for the lost Lenore—<br>
+For the rare and radiant maiden whom the angels name Lenore—<br>
+Nameless here for evermore.</p>
+<h2>Annabel Lee</h2>
+<p>It was many and many a year ago,<br>
+In a kingdom by the sea,<br>
+That a maiden there lived whom you may know<br>
+By the name of Annabel Lee;<br>
+And this maiden she lived with no other thought<br>
+Than to love and be loved by me.</p>`
+  },
+  {
+    id: 6,
+    title: "Sherlock Holmes",
+    author: "Arthur Conan Doyle",
+    genre: "mystery",
+    mood: "cozy",
+    stars: 5,
+    badge: "Popular",
+    color: ["#1a1500","#302800"],
+    content: `<h2>A Study in Scarlet</h2>
+<p>In the year 1878 I took my degree of Doctor of Medicine of the University of London, and proceeded to Netley to go through the course prescribed for surgeons in the Army. Having completed my studies there, I was duly attached to the Fifth Northumberland Fusiliers as Assistant Surgeon.</p>
+<p>The regiment was stationed in India at the time, and before I could join it, the second Afghan war had broken out. On landing at Bombay, I learned that my corps had advanced through the passes, and was already deep in the enemy's country. I followed, however, with many other officers who were in the same situation as myself, and succeeded in reaching Candahar in safety, where I found my regiment, and at once entered upon my new duties.</p>
+<h2>221B Baker Street</h2>
+<p>"You have been in Afghanistan, I perceive," said Holmes.</p>
+<p>I stared at him in astonishment. How could he know that? I had said nothing — I was still in the doorway, coat on, bag in hand. And yet he stated it not as a question but as a simple fact, the way one might note the weather.</p>
+<p>Later I would learn the method. Always the method. But in that first moment, standing in the curious lodgings on Baker Street, with the smell of tobacco and chemicals in the air and that singular man watching me with his grey eyes, I only felt the distinct and vertiginous sensation of encountering a mind unlike any other.</p>`
+  },
+  {
+    id: 7,
+    title: "The Little Prince",
+    author: "Antoine de Saint-Exupéry",
+    genre: "classic",
+    mood: "cozy",
+    stars: 5,
+    color: ["#001830","#002850"],
+    content: `<h2>Chapter I</h2>
+<p>Once when I was six years old I saw a magnificent picture in a book, called True Stories from Nature, about the primeval forest. It was a picture of a boa constrictor in the act of swallowing an animal. In the book it said: "Boa constrictors swallow their prey whole, without chewing it. After that they are not able to move, and they sleep through the six months that they need for digestion."</p>
+<p>I pondered deeply, then, over the adventures of the jungle. And after some work with a colored pencil I succeeded in making my first drawing. I showed my masterpiece to the grown-ups, and asked them whether the drawing frightened them. But they answered: "Frightened? Why should any one be frightened by a hat?"</p>
+<h2>Chapter XXI</h2>
+<p>"What is essential," said the fox, "is invisible to the eye."</p>
+<p>The little prince repeated it so that he would be sure to remember it. "It is the time you have wasted for your rose that makes your rose so important."</p>
+<p>"It is the time I have wasted for my rose—" said the little prince, so that he would be sure to remember it.</p>
+<p>"Men have forgotten this truth," said the fox. "But you must not forget it. You become responsible, forever, for what you have tamed. You are responsible for your rose…"</p>`
+  }
+];
+
+let currentFontSize = 1;
+let currentGenre = 'all';
+
+// ── RENDER BOOKS ──
+function renderBooks(filter = 'all') {
+  const grid = document.getElementById('bookGrid');
+  const filtered = filter === 'all' ? BOOKS : BOOKS.filter(b => b.genre === filter || b.mood === filter);
+  
+  grid.innerHTML = filtered.map(book => `
+    <div class="book-card" onclick="openBook(${book.id})">
+      <div class="book-cover">
+        <div class="book-cover-inner" style="background: linear-gradient(150deg, ${book.color[0]}, ${book.color[1]});">
+          ${book.badge ? `<div class="badge">${book.badge}</div>` : ''}
+          <div>
+            <div class="book-cover-title">${book.title}</div>
+            <div class="book-cover-author">${book.author}</div>
+          </div>
+        </div>
+      </div>
+      <div class="book-meta">
+        <div class="book-name">${book.title}</div>
+        <div class="book-author">${book.author}</div>
+        <div class="book-stars">${'★'.repeat(book.stars)}${'☆'.repeat(5-book.stars)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── DECORATIVE SHELF ──
+function renderShelf() {
+  const shelf = document.getElementById('decorShelf');
+  const colors = ['#3d2b1f','#1f3040','#2a3320','#3a2030','#1e2e38','#2d1f10','#183028','#301520'];
+  const heights = [110,95,120,85,130,100,115,90,125,80,105,118,92,128,88,108];
+  shelf.innerHTML = heights.map((h,i) => `
+    <div class="shelf-book" style="height:${h}px;background:${colors[i%colors.length]};"></div>
+  `).join('');
+}
+
+// ── OPEN/CLOSE MODAL ──
+function openBook(id) {
+  const book = BOOKS.find(b => b.id === id);
+  if (!book) return;
+  document.getElementById('modalTitle').textContent = book.title;
+  document.getElementById('modalAuthor').textContent = book.author;
+  document.getElementById('readerBody').innerHTML = book.content;
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('pageInfo').textContent = 'Beginning';
+  document.getElementById('pageEnd').textContent = book.author;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('readerBody').scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ── FONT SIZE ──
+function changeFont(dir) {
+  currentFontSize = Math.max(0.8, Math.min(1.4, currentFontSize + dir * 0.1));
+  document.getElementById('readerBody').style.fontSize = currentFontSize + 'rem';
+}
+
+// ── PROGRESS ──
+function updateProgress() {
+  const body = document.getElementById('readerBody');
+  const pct = body.scrollTop / (body.scrollHeight - body.clientHeight) * 100;
+  document.getElementById('progressFill').style.width = Math.min(100, pct) + '%';
+  const pg = Math.ceil(pct / 10);
+  document.getElementById('pageInfo').textContent = pct < 2 ? 'Beginning' : pct > 98 ? 'The End' : `~${Math.round(pct)}% read`;
+}
+
+function seekProgress(e) {
+  const wrap = e.currentTarget;
+  const pct = e.offsetX / wrap.offsetWidth;
+  const body = document.getElementById('readerBody');
+  body.scrollTop = pct * (body.scrollHeight - body.clientHeight);
+}
+
+// ── BOOKMARK ──
+function toggleBookmark() {
+  const btn = document.getElementById('bmBtn');
+  btn.style.color = btn.style.color === 'gold' ? '' : 'gold';
+}
+
+// ── GENRE FILTER ──
+function setGenre(el, genre) {
+  document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentGenre = genre;
+  renderBooks(genre);
+}
+
+function filterGenre(f) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (f === 'new') renderBooks('fantasy');
+  else if (f === 'popular') renderBooks('mystery');
+  else renderBooks('all');
+}
+
+// ── SEARCH ──
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  if (!q) { renderBooks(currentGenre); return; }
+  const grid = document.getElementById('bookGrid');
+  const results = BOOKS.filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || b.genre.includes(q));
+  grid.innerHTML = results.length ? results.map(book => `
+    <div class="book-card" onclick="openBook(${book.id})">
+      <div class="book-cover">
+        <div class="book-cover-inner" style="background: linear-gradient(150deg, ${book.color[0]}, ${book.color[1]});">
+          ${book.badge ? `<div class="badge">${book.badge}</div>` : ''}
+          <div>
+            <div class="book-cover-title">${book.title}</div>
+            <div class="book-cover-author">${book.author}</div>
+          </div>
+        </div>
+      </div>
+      <div class="book-meta">
+        <div class="book-name">${book.title}</div>
+        <div class="book-author">${book.author}</div>
+        <div class="book-stars">${'★'.repeat(book.stars)}</div>
+      </div>
+    </div>
+  `).join('') : `<div style="grid-column:1/-1;color:var(--muted);font-style:italic;padding:2rem 0;">No books found for "${e.target.value}"…</div>`;
+});
+
+// ── INIT ──
+renderShelf();
+renderBooks();
+</script>
+</body>
+</html>
